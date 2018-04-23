@@ -62,6 +62,9 @@
 #define NTP_ADDRESS_3 20
 #define NTP_ADDRESS_4 254
 
+// retry delay while NTP is not responding
+#define NTP_RETRY_MILLIS 10000
+
 // Time zone
 #define TIME_ZONE 1
 /******************************************************************************/
@@ -84,22 +87,22 @@
 // Each defined line will Toggle Switch at start after the delay indicated.
 // This allow to define a power on sequence for every plugged thing
 // POS means position of the switch in the POWER_SWITCH_PIN variable (Controller.cpp)
-#define INIT_1ST_SWITCH_DELAY 1000
+#define INIT_1ST_SWITCH_DELAY 2000
 #define INIT_1ST_SWITCH_POS   0
 #define INIT_2ND_SWITCH_DELAY 1000
-#define INIT_2ND_SWITCH_POS   7
+#define INIT_2ND_SWITCH_POS   1
 #define INIT_3RD_SWITCH_DELAY 1000
-#define INIT_3RD_SWITCH_POS   1
+#define INIT_3RD_SWITCH_POS   2
 #define INIT_4TH_SWITCH_DELAY 1000
-#define INIT_4TH_SWITCH_POS   6
+#define INIT_4TH_SWITCH_POS   3
 #define INIT_5TH_SWITCH_DELAY 1000
-#define INIT_5TH_SWITCH_POS   2
+#define INIT_5TH_SWITCH_POS   4
 #define INIT_6TH_SWITCH_DELAY 1000
 #define INIT_6TH_SWITCH_POS   5
 #define INIT_7TH_SWITCH_DELAY 1000
-#define INIT_7TH_SWITCH_POS   3
+#define INIT_7TH_SWITCH_POS   6
 #define INIT_8TH_SWITCH_DELAY 1000
-#define INIT_8TH_SWITCH_POS   4
+#define INIT_8TH_SWITCH_POS   7
 /******************************************************************************/
 
 
