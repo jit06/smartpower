@@ -7,6 +7,7 @@
 byte MAC_ADDR[] = { MAC_ADDRESS };
 IPAddress IP_ADDR(IP_ADDRESS_1, IP_ADDRESS_2, IP_ADDRESS_3, IP_ADDRESS_4);
 extern bool TIME_SET;
+unsigned long LAST_RETRY;
 
 void setup() {
   
@@ -38,7 +39,8 @@ void loop() {
   handleHTTPRequest();
 
   // if time not set during init (eg: router not yet started, retry)
-  if(timeStatus() == timeNotSet) {
+  if(timeStatus() == timeNotSet && (millis() - LAST_RETRY) >  NTP_RETRY_MILLIS) {
     initTimeHandler();
+    LAST_RETRY = millis();
   }
 }
