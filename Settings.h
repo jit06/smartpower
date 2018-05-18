@@ -7,7 +7,10 @@
 // set on which arduino pins sensors are plugged
 #define DTH11_PIN A0
 #define ACS1_PIN  A1
-#define ACS2_PIN  A1
+#define ACS2_PIN  A2
+#define ACS_VPERAMP 100 // 185 for 5A, 100 for 20A, 66 for 30A
+#define ACS712_NEUTRAL_12V 513 // value returned when no current 
+#define ACS712_NEUTRAL_5V  516 // value returned when no current 
 
 // set frequency at which a temperature sample is read (in miliseconds)
 #define TEMP_INTERVAL   1000
@@ -20,7 +23,7 @@
 #define CUR_NB_SAMPLES  100.0
 
 // How many published sensors entries to keep in history (limited by RAM)
-#define STORAGE_MAX_ENTRIES 20
+#define STORAGE_MAX_ENTRIES 120
 /******************************************************************************/
 
 
@@ -87,22 +90,22 @@
 // Each defined line will Toggle Switch at start after the delay indicated.
 // This allow to define a power on sequence for every plugged thing
 // POS means position of the switch in the POWER_SWITCH_PIN variable (Controller.cpp)
-#define INIT_1ST_SWITCH_DELAY 2000
-#define INIT_1ST_SWITCH_POS   0
-#define INIT_2ND_SWITCH_DELAY 1000
-#define INIT_2ND_SWITCH_POS   1
-#define INIT_3RD_SWITCH_DELAY 1000
-#define INIT_3RD_SWITCH_POS   2
-#define INIT_4TH_SWITCH_DELAY 1000
-#define INIT_4TH_SWITCH_POS   3
-#define INIT_5TH_SWITCH_DELAY 1000
-#define INIT_5TH_SWITCH_POS   4
-#define INIT_6TH_SWITCH_DELAY 1000
-#define INIT_6TH_SWITCH_POS   5
+//#define INIT_1ST_SWITCH_DELAY 2000
+//#define INIT_1ST_SWITCH_POS   0
+//#define INIT_2ND_SWITCH_DELAY 1000
+//#define INIT_2ND_SWITCH_POS   1
+//#define INIT_3RD_SWITCH_DELAY 1000
+//#define INIT_3RD_SWITCH_POS   2
+//#define INIT_4TH_SWITCH_DELAY 1000
+//#define INIT_4TH_SWITCH_POS   3
+//#define INIT_5TH_SWITCH_DELAY 1000
+//#define INIT_5TH_SWITCH_POS   4
+//#define INIT_6TH_SWITCH_DELAY 1000
+//#define INIT_6TH_SWITCH_POS   5
 #define INIT_7TH_SWITCH_DELAY 1000
 #define INIT_7TH_SWITCH_POS   6
-#define INIT_8TH_SWITCH_DELAY 1000
-#define INIT_8TH_SWITCH_POS   7
+//#define INIT_8TH_SWITCH_DELAY 1000
+//#define INIT_8TH_SWITCH_POS   7
 /******************************************************************************/
 
 

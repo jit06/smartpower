@@ -33,7 +33,7 @@ void loop() {
   readCurrentConsumption();
   
   // refesh screen
-  updateDisplay(getLastCurrentConsumption(), getLastTemperature());
+  updateDisplay(getLastPowerConsumption(), getLastTemperature());
   
   // listen for HTTP connection
   handleHTTPRequest();
