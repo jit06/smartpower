@@ -47,11 +47,23 @@ void handleHTTPRequest() {
             sendJsonContentType(&client);
             sendTemPageContent(&client);
             
-          } else if (strcmp("/CUR",command)==0) {
+          } else if (strcmp("/05V",command)==0) {
             Serial.println(F("HTTP Answer => json current page"));
             sendDefaultHeaders(&client);
             sendJsonContentType(&client);
-            sendCurPageContent(&client);
+            sendCur5vPageContent(&client);
+          
+          } else if (strcmp("/12V",command)==0) {
+            Serial.println(F("HTTP Answer => json current page"));
+            sendDefaultHeaders(&client);
+            sendJsonContentType(&client);
+            sendCur12vPageContent(&client);
+
+          } else if (strcmp("/PWR",command)==0) {
+            Serial.println(F("HTTP Answer => json current page"));
+            sendDefaultHeaders(&client);
+            sendJsonContentType(&client);
+            sendPowerPageContent(&client);
             
           } else if (strcmp("/ALL",command)==0) {
             Serial.println(F("HTTP Answer => json all page"));
@@ -147,9 +159,15 @@ void sendDefaultPageContent(EthernetClient *client) {
   client->println();
   client->println(F("<!DOCTYPE HTML>"));
   client->println(F("<html>"));
-  client->println(F("<b>Current consumption: </b>"));
-  client->println(getLastCurrentConsumption());
-  client->println(F("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
+  client->println(F("<b>5V Current consumption: </b>"));
+  client->println(getLastCurrent5vConsumption());
+  client->println(F("&nbsp;&nbsp;&nbsp;&nbsp;"));
+  client->println(F("<b>12V Current consumption: </b>"));
+  client->println(getLastCurrent12vConsumption());
+  client->println(F("&nbsp;&nbsp;&nbsp;&nbsp;"));
+  client->println(F("<b>Power consumption: </b>"));
+  client->println(getLastPowerConsumption());
+  client->println(F("&nbsp;&nbsp;&nbsp;&nbsp;"));
   client->println(F("<b>Temperature: </b>"));
   client->println(getLastTemperature());
   client->println(F("</html>"));
@@ -162,10 +180,24 @@ void sendTemPageContent(EthernetClient *client) {
   client->print(F("\"}"));
 }
 
-void sendCurPageContent(EthernetClient *client) {
+void sendCur5vPageContent(EthernetClient *client) {
   client->println();
-  client->print(F("{\"current\":\""));
-  client->print(getLastCurrentConsumption());
+  client->print(F("{\"5v current consumption in Ah\":\""));
+  client->print(getLastCurrent5vConsumption());
+  client->print(F("\"}"));
+}
+
+void sendCur12vPageContent(EthernetClient *client) {
+  client->println();
+  client->print(F("{\"12v current consumption in Ah\":\""));
+  client->print(getLastCurrent12vConsumption());
+  client->print(F("\"}"));
+}
+
+void sendPowerPageContent(EthernetClient *client) {
+  client->println();
+  client->print(F("{\"Power consumption in Watt\":\""));
+  client->print(getLastPowerConsumption());
   client->print(F("\"}"));
 }
 
@@ -173,8 +205,12 @@ void sendAllPageContent(EthernetClient *client) {
   client->println();
   client->print(F("{\"temp\":\""));
   client->print(getLastTemperature());
-  client->print(F("\",\"current\":\""));
-  client->print(getLastCurrentConsumption());
+  client->print(F("\",\"5V current consumption in Ah\":\""));
+  client->print(getLastCurrent5vConsumption());
+  client->print(F("\",\"12V current consumption in Ah\":\""));
+  client->print(getLastCurrent12vConsumption());
+  client->print(F("\",\"Power consumption in Watt\":\""));
+  client->print(getLastPowerConsumption());
   client->print(F("\"}"));
 }
 
@@ -192,11 +228,27 @@ void sendHistoryPageContent(EthernetClient *client) {
     client->print(entry.value);
     client->print(F("\"},"));
 
-    entry = getStoredCurrent(i);
-    client->print(F("{\"current_ts\":\""));
+    entry = getStored5vCurrent(i);
+    client->print(F("{\"current5v_ts\":\""));
     client->print(entry.timeStamp);
     client->print(F("\","));
-    client->print(F("\"current\":\""));
+    client->print(F("\"current5v\":\""));
+    client->print(entry.value);
+    client->print(F("\"},"));
+
+    entry = getStored12vCurrent(i);
+    client->print(F("{\"current12v_ts\":\""));
+    client->print(entry.timeStamp);
+    client->print(F("\","));
+    client->print(F("\"current12v\":\""));
+    client->print(entry.value);
+    client->print(F("\"},"));
+
+    entry = getStoredPower(i);
+    client->print(F("{\"power_ts\":\""));
+    client->print(entry.timeStamp);
+    client->print(F("\","));
+    client->print(F("\"power\":\""));
     client->print(entry.value);
     client->print(F("\"},"));
   }
