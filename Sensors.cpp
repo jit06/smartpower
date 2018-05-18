@@ -2,7 +2,9 @@
 #include "Settings.h"
 
 // Rollng Data Stores
-Storage currentStorage[STORAGE_MAX_ENTRIES]; 
+Storage current5vStorage[STORAGE_MAX_ENTRIES]; 
+Storage current12vStorage[STORAGE_MAX_ENTRIES]; 
+Storage powerStorage[STORAGE_MAX_ENTRIES];
 Storage temperatureStorage[STORAGE_MAX_ENTRIES];
 
 // Rolling data store counters
@@ -12,31 +14,75 @@ int temperatureStorageCounter = 0;
 // global interface to DHT sensor
 SimpleDHT11 DHT11;
 
-
 // read current consumption (amps), and store it when enought samples have been collected
 void readCurrentConsumption(){
   static unsigned long lastRead = 0;
-  static float value = 0;
-  static float sum = 0;
+  static float value_current5v, value_power5v = 0;
+  static float value_current12v, value_power12v = 0;
+  static float sum5v,sum12v = 0;
   static int count = 0;
+  float current5v,current12v;
   
   if(millis() - lastRead >= CUR_INTERVAL) {
-    sum += analogRead(ACS1_PIN);
+    //Serial.print(F("Current analog read:"));
+    //Serial.println(analogRead(ACS1_PIN));
+    sum5v  += analogRead(ACS1_PIN);
+    sum12v += analogRead(ACS2_PIN);
     lastRead = millis();
     count++;
 
     if(count == CUR_NB_SAMPLES) {
-      value = (2.5 - (sum / CUR_NB_SAMPLES) * (5.0 / 1024.0)) / 0.185;
-      Serial.print(F("Current reads: "));
-      Serial.println(value);
-      sum=0;
+      // calculate current in mah
+      current5v = getCurrentFromACSValue(sum5v, ACS712_NEUTRAL_5V);
+      current12v = getCurrentFromACSValue(sum12v, ACS712_NEUTRAL_12V);
+      
+      // effective value : divide current by square root of 2, and x1000 to get Ah
+      value_current5v = getEffectiveCurrentInAhFromCurrent(current5v);
+      value_current12v = getEffectiveCurrentInAhFromCurrent(current12v);
+      
+      // calculate power in Watts
+      value_power5v  = value_current5v * 5;
+      value_power12v = value_current12v * 12;
+      
+      //Serial.print(F("Current 5v reads: "));
+      //Serial.println(value_current5v);
+      //Serial.print(F("Power 5v reads: "));
+      //Serial.println(value_power5v);
+      Serial.print(F("sum 5v reads: "));
+      Serial.println(sum5v / CUR_NB_SAMPLES);
+      Serial.print(F("sum 12v reads: "));
+      Serial.println(sum12v / CUR_NB_SAMPLES);
+      Serial.print(F("Current 12v reads: "));
+      Serial.println(value_current12v);
+      //Serial.print(F("Power 12v reads: "));
+      //Serial.println(value_power12v);
+
+      // clean up values
+      if(value_current5v < 0) value_current5v = 0;
+      if(value_current12v < 0) value_current12v = 0;
+      if(value_power5v < 0) value_power5v = 0;
+      if(value_power12v < 0) value_power12v = 0;
+
+      // store values in history
+      storeValue(value_current5v, current5vStorage, &currentStorageCounter);
+      storeValue(value_current12v, current12vStorage, &currentStorageCounter);
+      storeValue(value_power5v+value_power12v, powerStorage, &currentStorageCounter);
+
+      // reset counters
+      sum5v=0;
+      sum12v=0;
       count=0;
-      if(value < 0) value = 0;
-      storeValue(value, currentStorage, &currentStorageCounter);
     }
   }
 }
 
+float getCurrentFromACSValue(float acsvalue, int neutral) {
+  return (float) ((acsvalue / CUR_NB_SAMPLES) - neutral)/1024*5/ACS_VPERAMP;
+}
+
+float getEffectiveCurrentInAhFromCurrent(float current) {
+  return (current / 1.414) * 1000;
+}
 
 // read temperature (celcius dregress)and store it when enought samples have been collected
 void readTemperature() {
@@ -93,10 +139,19 @@ void storeValue(float value, Storage *store, int *counter) {
 
 
 // retreive the lastest stored current (= most recent one)
-float getLastCurrentConsumption() {
-  return getLastStoredValue(currentStorage, &currentStorageCounter);
+float getLastCurrent5vConsumption() {
+  return getLastStoredValue(current5vStorage, &currentStorageCounter);
 }
 
+// retreive the lastest stored current (= most recent one)
+float getLastCurrent12vConsumption() {
+  return getLastStoredValue(current12vStorage, &currentStorageCounter);
+}
+
+// retreive the lastest stored power (= most recent one)
+float getLastPowerConsumption() {
+  return getLastStoredValue(powerStorage, &currentStorageCounter);
+}
 
 // retreive the lastest stored value from a given store
 float getLastStoredValue(Storage *store, int *counter) {
@@ -109,8 +164,16 @@ Storage getStoredTemperature(int pos) {
 }
 
 // retreive a specific Current value
-Storage getStoredCurrent(int pos) {
-  return currentStorage[pos];
+Storage getStored5vCurrent(int pos) {
+  return current5vStorage[pos];
 }
 
+// retreive a specific Current value
+Storage getStored12vCurrent(int pos) {
+  return current12vStorage[pos];
+}
 
+// retreive a specific power value
+Storage getStoredPower(int pos) {
+  return powerStorage[pos];
+}

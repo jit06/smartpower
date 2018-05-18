@@ -14,10 +14,16 @@ typedef struct {
 
 void readCurrentConsumption();
 void readTemperature();
+float getCurrentFromACSValue(float acsvalue, int neutral);
+float getEffectiveCurrentInAhFromCurrent(float current);
 void storeValue(float value, Storage *store, int *counter);
 float getLastTemperature();
-float getLastCurrentConsumption();
+float getLastCurrent5vConsumption();
+float getLastCurrent12vConsumption();
 float getLastStoredValue(Storage *store, int *counter);
+float getLastPowerConsumption();
 Storage getStoredTemperature(int pos);
-Storage getStoredCurrent(int pos);
+Storage getStored5vCurrent(int pos);
+Storage getStored12vCurrent(int pos);
+Storage getStoredPower(int pos);
 #endif
