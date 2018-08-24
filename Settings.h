@@ -18,12 +18,14 @@
 #define TEMP_NB_SAMPLES 10.0
 
 // set frequency at which a current samples are read (in miliseconds)
-#define CUR_INTERVAL    10
+// 20 seems stable, smaller values gives some bad reads...
+#define CUR_INTERVAL    20
 // set the number of samples to read before publishing average values
 #define CUR_NB_SAMPLES  100.0
 
 // How many published sensors entries to keep in history (limited by RAM)
-#define STORAGE_MAX_ENTRIES 120
+// with 160, there is 25% free ram for dynamic variables on a MEGA
+#define STORAGE_MAX_ENTRIES 160
 /******************************************************************************/
 
 
