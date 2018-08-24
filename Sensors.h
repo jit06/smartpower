@@ -16,7 +16,7 @@ void readCurrentConsumption();
 void readTemperature();
 float getCurrentFromACSValue(float acsvalue, int neutral);
 float getEffectiveCurrentInAhFromCurrent(float current);
-void storeValue(float value, Storage *store, int *counter);
+void storeValue(float value, Storage *store, int *counter, time_t timestamp);
 float getLastTemperature();
 float getLastCurrent5vConsumption();
 float getLastCurrent12vConsumption();

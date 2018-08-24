@@ -64,9 +64,10 @@ void readCurrentConsumption(){
       if(value_power12v < 0) value_power12v = 0;
 
       // store values in history
-      storeValue(value_current5v, current5vStorage, &currentStorageCounter);
-      storeValue(value_current12v, current12vStorage, &currentStorageCounter);
-      storeValue(value_power5v+value_power12v, powerStorage, &currentStorageCounter);
+      time_t timestamp = getTimestamp();
+      storeValue(value_current5v, current5vStorage, &currentStorageCounter, timestamp);
+      storeValue(value_current12v, current12vStorage, &currentStorageCounter, timestamp);
+      storeValue(value_power5v+value_power12v, powerStorage, &currentStorageCounter, timestamp);
 
       // reset counters
       sum5v=0;
@@ -103,8 +104,9 @@ void readTemperature() {
       count++;
 
       if(count == TEMP_NB_SAMPLES || value == 0) {
-        value = sum / TEMP_NB_SAMPLES;
-        storeValue(value, temperatureStorage, &temperatureStorageCounter);
+        value = sum / float(TEMP_NB_SAMPLES);
+        time_t timestamp = getTimestamp();
+        storeValue(value, temperatureStorage, &temperatureStorageCounter, timestamp);
         sum=0;
         count=0;
         Serial.print(F("Temperature reads: "));
@@ -118,22 +120,23 @@ void readTemperature() {
 
 
 // Store values for history retreival (rolling buffer)
-void storeValue(float value, Storage *store, int *counter) {
+void storeValue(float value, Storage *store, int *counter, time_t timestamp) {
 
-  // store value in history rolling buffer
-  store[*counter].value = value;
-  store[*counter].timeStamp = getTimestamp();
-  *counter+=1;
-
-  // if maximum numer of entries stored, start from first pos
+  // if maximum number of entries stored, start from first pos
   if(*counter >= STORAGE_MAX_ENTRIES) {
     *counter=0;
   }
+  
+  // store value in history rolling buffer
+  store[*counter].value = value;
+  store[*counter].timeStamp = timestamp;
+  *counter+=1;
+
 }
 
 
 // retreive the lastest stored temperature (= most recent one)
-    float getLastTemperature() {
+float getLastTemperature() {
   return getLastStoredValue(temperatureStorage, &temperatureStorageCounter);
 }
 
